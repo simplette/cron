@@ -20,10 +20,19 @@ class CronRunner extends Command
 	/** @var IStorage */
 	private $timeStorage;
 
-	public function __construct(IStorage $timeStorage)
+	/** @var string */
+	private $locksDir;
+
+	/**
+	 * CronRunner constructor.
+	 * @param IStorage $timeStorage
+	 * @param string $locksDir
+	 */
+	public function __construct(IStorage $timeStorage, $locksDir)
 	{
 		parent::__construct('cron:run');
 		$this->timeStorage = $timeStorage;
+		$this->locksDir = $locksDir;
 	}
 
 	protected function configure()
@@ -46,7 +55,10 @@ class CronRunner extends Command
 			$annotations = ClassType::from($command)->getAnnotations();
 			if (isset($annotations['cron']) && $this->shouldStart($execTime, $name, $annotations['cron'])) {
 				try {
-					$output->writeln(sprintf("\n<info>Task '%s' started</info>", $name));
+					$output->writeln(sprintf("\n<info>Task '%s' starting...</info>", $name));
+					if ($command instanceof SynchronizedCommand) {
+						$command->setLocksDir($this->locksDir);
+					}
 					$statusCode = $command->run($input, $output);
 					if ($statusCode !== 0) {
 						$output->writeln(sprintf("<info>Task '%s' error</info>\n", $name));

@@ -36,7 +36,7 @@ class CronExtension extends CompilerExtension
 	{
 		$this->prepareLocksDir();
 		$this->setupStorage($this->config['storage']);
-		$this->setupRunner($this->config['runner']);
+		$this->setupRunner($this->config['runner'], $this->config['locksDir']);
 	}
 
 	private function prepareLocksDir()
@@ -66,13 +66,14 @@ class CronExtension extends CompilerExtension
 
 	/**
 	 * @param string|Statement $config
+	 * @param string $locksDir
 	 */
-	private function setupRunner($config)
+	private function setupRunner($config, $locksDir)
 	{
 		$builder = $this->getContainerBuilder();
 		$definition = $builder->addDefinition('console.cron.runner');
 		Compiler::loadDefinition($definition, $config);
-		$definition->setArguments(['@console.cron.storage']);
+		$definition->setArguments(['@console.cron.storage', $locksDir]);
 		$definition->setAutowired(FALSE);
 		$builder->getDefinition('console.application')
 			->addSetup('add', ['@console.cron.runner']);
