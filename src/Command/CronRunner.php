@@ -59,8 +59,7 @@ class CronRunner extends Command
 					if ($command instanceof SynchronizedCommand) {
 						$command->setLocksDir($this->locksDir);
 					}
-					$statusCode = $command->run($input, $output);
-					if ($statusCode !== 0) {
+					if (($statusCode = $command->run($input, $output)) !== 0) {
 						$output->writeln(sprintf("<info>Task '%s' error</info>\n", $name));
 						return $statusCode;
 					} else {
@@ -69,6 +68,7 @@ class CronRunner extends Command
 					}
 				} catch (\Exception $e) {
 					$output->writeln(sprintf("<error>Exception in task '%s'</error> - %s\n", $name, $e->getMessage()));
+					return 1;
 				}
 			}
 		}

@@ -35,7 +35,7 @@ class SynchronizedCommand extends Command
 			return parent::run($input, $output);
 		}
 		$output->writeln(sprintf("<info>Task '%s' already runnning</info>\n", $this->getName()));
-		return 0;
+		return 1;
 	}
 
 	private function lock()
