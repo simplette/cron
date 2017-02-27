@@ -46,13 +46,17 @@ class CronRunner extends Command
 			$annotations = ClassType::from($command)->getAnnotations();
 			if (isset($annotations['cron']) && $this->shouldStart($execTime, $name, $annotations['cron'])) {
 				try {
-					$output->writeln(sprintf("<info>Cron task '%s' started</info>", $name));
+					$output->writeln(sprintf("\n<info>Task '%s' started</info>", $name));
 					$statusCode = $command->run($input, $output);
 					if ($statusCode !== 0) {
+						$output->writeln(sprintf("<info>Task '%s' error</info>\n", $name));
 						return $statusCode;
+					} else {
+						$output->writeln(sprintf("<info>Task '%s' finished</info>\n", $name));
+						$this->timeStorage->putLastTime($name, $execTime);
 					}
 				} catch (\Exception $e) {
-					$output->writeln(sprintf("<error>Error in task '%s'</error> - %s", $name, $e->getMessage()));
+					$output->writeln(sprintf("<error>Exception in task '%s'</error> - %s\n", $name, $e->getMessage()));
 				}
 			}
 		}
@@ -71,6 +75,9 @@ class CronRunner extends Command
 	{
 		$execTime = $time->modifyClone('+ 3 seconds');
 		$lastTime = $this->timeStorage->getLastTime($name);
+		if ($lastTime === NULL) {
+			return TRUE;
+		}
 		foreach ($cronExpressions as $expression) {
 			$expression = CronExpression::factory(Strings::replace($expression, '~\\\\~', '/'));
 			if ($execTime->getTimestamp() > $expression->getNextRunDate($lastTime)->getTimestamp()) {

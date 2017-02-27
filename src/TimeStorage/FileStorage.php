@@ -60,7 +60,7 @@ class FileStorage implements IStorage
 	 */
 	private function getFilename($name)
 	{
-		return 'safe://' . $this->dir . '/' . Strings::webalize($name) . '--' . substr(md5($name), 0, 10);
+		return 'nette.safe://' . $this->dir . '/' . Strings::webalize($name) . '--' . substr(md5($name), 0, 10);
 	}
 
 }
