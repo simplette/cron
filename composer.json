@@ -22,7 +22,10 @@
 		"simplette/console": "~0.1",
 		"nette/bootstrap": "~2.4",
 		"nette/di": "~2.4",
-		"nette/utils": "~2.4"
+		"nette/reflection": "~2.4",
+		"nette/safe-stream": "~2.3",
+		"nette/utils": "~2.4",
+		"mtdowling/cron-expression": "^1.2"
 	},
 	"require-dev": {
 		"phpunit/phpunit": "^6.0",

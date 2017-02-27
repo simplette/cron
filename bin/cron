@@ -24,5 +24,8 @@
  * IN THE SOFTWARE.
  */
 
+use Symfony\Component\Console\Input\ArgvInput;
+use Symfony\Component\Console\Output\ConsoleOutput;
+
 $app = require __DIR__ . '/../app/cron.php';
-$app->run();
+$app->run(new ArgvInput, new ConsoleOutput);
